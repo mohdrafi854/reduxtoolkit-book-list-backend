@@ -55,6 +55,30 @@ app.delete("/books/:id", async (req, res) => {
   }
 });
 
+async function bookUpdateById(bookId, updateToData) {
+  try {
+    const updateBook = await Books.findByIdAndUpdate(bookId, updateToData, {
+      new: true,
+    });
+    return updateBook;
+  } catch (error) {
+    console.log("Error in update book", error);
+  }
+}
+
+app.put("/books/edit/:bookId", async (req, res) => {
+  try {
+    const updateBook = await bookUpdateById(req.params.bookId, req.body);
+    if (updateBook) {
+      res.status(201).json({ message: "Book update successfully." });
+    } else {
+      res.status(404).json({ message: "Book does not exist." });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update book" });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
